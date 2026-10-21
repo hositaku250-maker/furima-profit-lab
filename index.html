@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="販売価格・販売手数料・送料・仕入れ額を入力して、フリマ販売の利益と利益率を無料で計算できます。">
+  <meta name="theme-color" content="#f7f7f4">
+  <title>フリマ利益計算ラボ｜無料で利益・利益率を計算</title>
+  <style>
+    :root{--ink:#1e293b;--muted:#64748b;--line:#e2e8f0;--paper:#fff;--bg:#f7f7f4;--accent:#176b54;--accent-light:#e8f4ef;--danger:#b42318}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP",sans-serif;line-height:1.65}
+    .wrap{max-width:960px;margin:0 auto;padding:28px 18px 52px}
+    header{margin:8px 0 28px}
+    .brand{font-size:13px;letter-spacing:.12em;color:var(--accent);font-weight:800;text-transform:uppercase}
+    h1{font-size:clamp(28px,5vw,42px);line-height:1.2;margin:10px 0 12px;letter-spacing:-.04em}
+    .lead{color:var(--muted);max-width:650px;margin:0}
+    .layout{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;align-items:start}
+    .card{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:0 8px 30px rgba(15,23,42,.035)}
+    h2{font-size:18px;margin:0 0 18px}
+    .field{margin:0 0 17px}
+    label{display:block;font-size:14px;font-weight:700;margin-bottom:7px}
+    .hint{font-size:12px;color:var(--muted);font-weight:400;margin-left:5px}
+    .input-wrap{display:flex;align-items:center;border:1px solid #cbd5e1;border-radius:11px;background:#fff;overflow:hidden}
+    .input-wrap:focus-within{outline:3px solid #c5e5d8;border-color:var(--accent)}
+    input{width:100%;min-width:0;border:0;padding:13px 12px;font:inherit;font-size:16px;color:var(--ink);outline:none;background:transparent}
+    .unit{padding:0 13px;color:var(--muted);font-size:14px;white-space:nowrap}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .result{background:var(--accent-light);border:1px solid #cfe7dc}
+    .result .eyebrow{font-size:13px;font-weight:700;color:var(--accent)}
+    .profit{font-size:clamp(32px,5vw,44px);font-weight:800;letter-spacing:-.04em;color:var(--accent);margin:5px 0 18px;overflow-wrap:anywhere}
+    .profit.negative{color:var(--danger)}
+    .stats{display:grid;gap:0}
+    .stat{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid #cfe2d8;font-size:14px}
+    .stat strong{font-variant-numeric:tabular-nums;text-align:right}
+    .stat.total{font-weight:800}
+    .status{margin-top:16px;padding:11px 13px;border-radius:10px;background:#fff;color:var(--accent);font-size:13px;font-weight:700}
+    .status.negative{color:var(--danger)}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+    button{border:1px solid var(--line);border-radius:10px;padding:10px 14px;font:inherit;font-size:14px;font-weight:700;cursor:pointer;background:#fff;color:var(--ink)}
+    button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+    button:hover{filter:brightness(.97)}
+    .note{font-size:12px;color:var(--muted);margin:15px 0 0}
+    .content{margin-top:24px}
+    .content h2{margin-bottom:8px}
+    .content p,.content li{color:#475569;font-size:14px}
+    .content ul{padding-left:1.25rem}
+    footer{border-top:1px solid var(--line);margin-top:30px;padding-top:18px;color:var(--muted);font-size:12px}
+    footer a{color:inherit;margin-right:14px}
+    @media(max-width:700px){.layout{grid-template-columns:1fr}.wrap{padding:20px 13px 38px}.card{padding:19px}.result{order:-1}.row{gap:9px}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <div class="brand">FREE TOOL / FURIMA</div>
+      <h1>フリマ利益計算ラボ</h1>
+      <p class="lead">販売価格・手数料・送料・仕入れ額を入力するだけ。フリマ販売で手元に残る利益と利益率を、無料でかんたんに計算できます。</p>
+    </header>
+
+    <div class="layout">
+      <section class="card" aria-labelledby="inputs-title">
+        <h2 id="inputs-title">販売条件を入力</h2>
+        <div class="field">
+          <label for="price">販売価格</label>
+          <div class="input-wrap"><input id="price" type="number" min="0" step="1" value="3000" inputmode="decimal"><span class="unit">円</span></div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="fee">販売手数料率 <span class="hint">例：10%</span></label>
+            <div class="input-wrap"><input id="fee" type="number" min="0" max="100" step="0.1" value="10" inputmode="decimal"><span class="unit">%</span></div>
+          </div>
+          <div class="field">
+            <label for="shipping">送料</label>
+            <div class="input-wrap"><input id="shipping" type="number" min="0" step="1" value="230" inputmode="decimal"><span class="unit">円</span></div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="cost">仕入れ・購入額</label>
+            <div class="input-wrap"><input id="cost" type="number" min="0" step="1" value="1000" inputmode="decimal"><span class="unit">円</span></div>
+          </div>
+          <div class="field">
+            <label for="other">梱包などその他費用</label>
+            <div class="input-wrap"><input id="other" type="number" min="0" step="1" value="50" inputmode="decimal"><span class="unit">円</span></div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="primary" id="reset" type="button">初期値に戻す</button>
+          <button id="example" type="button">例を入力</button>
+        </div>
+        <p class="note">手数料率は利用するフリマサービスに合わせて変更してください。手数料の端数処理や送料の扱いは、各サービスの規約をご確認ください。</p>
+      </section>
+
+      <section class="card result" aria-live="polite" aria-labelledby="result-title">
+        <div class="eyebrow" id="result-title">計算結果 / ESTIMATED PROFIT</div>
+        <div class="profit" id="profit">1,420円</div>
+        <div class="stats">
+          <div class="stat"><span>販売価格</span><strong id="out-price">3,000円</strong></div>
+          <div class="stat"><span>販売手数料（概算）</span><strong id="out-fee">300円</strong></div>
+          <div class="stat"><span>送料</span><strong id="out-shipping">230円</strong></div>
+          <div class="stat"><span>仕入れ・購入額</span><strong id="out-cost">1,000円</strong></div>
+          <div class="stat"><span>その他費用</span><strong id="out-other">50円</strong></div>
+          <div class="stat total"><span>利益率（利益 ÷ 販売価格）</span><strong id="out-margin">47.3%</strong></div>
+        </div>
+        <div class="status" id="status">この条件では利益が出る見込みです。</div>
+      </section>
+    </div>
+
+    <section class="card content">
+      <h2>フリマの利益はどう計算する？</h2>
+      <p>基本の計算式は「販売価格 − 販売手数料 − 送料 − 仕入れ額 − その他費用」です。出品前に費用を見積もることで、赤字販売を避けやすくなります。</p>
+      <ul>
+        <li><strong>販売手数料：</strong>販売価格に手数料率を掛けて概算します。</li>
+        <li><strong>送料：</strong>出品者が負担する送料を入力します。</li>
+        <li><strong>仕入れ・購入額：</strong>商品を入手するためにかかった金額を入力します。</li>
+        <li><strong>その他費用：</strong>梱包材など、ほかにかかる費用を入力します。</li>
+      </ul>
+      <p>このツールは簡易シミュレーターです。実際の利益は、サービスごとの手数料計算、キャンペーン、ポイント、税金などによって異なる場合があります。</p>
+    </section>
+
+    <footer>
+      <p>フリマ利益計算ラボ｜無料の計算ツール</p>
+      <a href="about.html">運営者情報</a>
+      <a href="privacy.html">プライバシーポリシー</a>
+      <a href="contact.html">お問い合わせ</a>
+      <p>※本サイトの計算結果は目安であり、正確性や特定の取引結果を保証するものではありません。</p>
+    </footer>
+  </main>
+  <script>
+    const ids = ["price", "fee", "shipping", "cost", "other"];
+    const yen = n => Math.round(n).toLocaleString("ja-JP") + "円";
+    const val = id => Math.max(0, Number(document.getElementById(id).value) || 0);
+    function calculate() {
+      const price = val("price");
+      const rate = Math.min(100, val("fee"));
+      const fee = Math.floor(price * rate / 100);
+      const shipping = val("shipping");
+      const cost = val("cost");
+      const other = val("other");
+      const profit = price - fee - shipping - cost - other;
+      const margin = price > 0 ? profit / price * 100 : 0;
+      document.getElementById("profit").textContent = yen(profit);
+      document.getElementById("profit").classList.toggle("negative", profit < 0);
+      document.getElementById("out-price").textContent = yen(price);
+      document.getElementById("out-fee").textContent = yen(fee);
+      document.getElementById("out-shipping").textContent = yen(shipping);
+      document.getElementById("out-cost").textContent = yen(cost);
+      document.getElementById("out-other").textContent = yen(other);
+      document.getElementById("out-margin").textContent = (price > 0 ? margin.toFixed(1) : "—") + (price > 0 ? "%" : "");
+      const status = document.getElementById("status");
+      status.textContent = profit < 0 ? "この条件では赤字になる見込みです。販売価格や費用を見直しましょう。" : profit === 0 ? "この条件では利益が0円です。費用を再確認しましょう。" : "この条件では利益が出る見込みです。";
+      status.classList.toggle("negative", profit <= 0);
+    }
+    ids.forEach(id => document.getElementById(id).addEventListener("input", calculate));
+    document.getElementById("reset").addEventListener("click", () => {
+      document.getElementById("price").value = 3000;
+      document.getElementById("fee").value = 10;
+      document.getElementById("shipping").value = 230;
+      document.getElementById("cost").value = 1000;
+      document.getElementById("other").value = 50;
+      calculate();
+    });
+    document.getElementById("example").addEventListener("click", () => {
+      document.getElementById("price").value = 1500;
+      document.getElementById("fee").value = 10;
+      document.getElementById("shipping").value = 750;
+      document.getElementById("cost").value = 500;
+      document.getElementById("other").value = 30;
+      calculate();
+    });
+    calculate();
+  </script>
+</body>
+</html>
